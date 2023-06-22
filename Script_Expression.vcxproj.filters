@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include_file.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="_Expression.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_ele.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="auto_iterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="if_container.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="html_doc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="htmlElement.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="asio_tcp_server.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_opr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="operators.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="script_command.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_taken.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_log_debug.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_segment.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="statement_register.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_invoke.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_cpp_func.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_Expression.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_ele.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="auto_iterator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="if_container.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="html_doc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="htmlElement.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_opr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="operators.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="script_command.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_taken.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_log_debug.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_segment.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_invoke.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_cpp_func.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="output.html">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+</Project>
