@@ -30,8 +30,9 @@ public:
 	exp_ele(string str);
 	exp_ele(string str, ele_type t);
 	exp_ele(const exp_ele& e) = default;
-	virtual bool operator ==(string str);
-	virtual bool operator ==(ele_type t);//quickly compare the type of element
+	virtual ~exp_ele() = default;
+	bool operator ==(string str);
+	bool operator ==(ele_type t);//quickly compare the type of element
 	operator std::string();
 	ele_type e_type;
 	string  e_str;
@@ -43,7 +44,11 @@ public:
 	//match to another ele_base_ptr, could be useful
 	std::shared_ptr<exp_ele> matched{ nullptr };
 	std::shared_ptr<exp_ele> owner{ nullptr };//indicate the owner of this element, could be useful
+
+	BOOST_DESCRIBE_CLASS(exp_ele, (),(),(),())
 };
+
+
 typedef std::shared_ptr<exp_ele> s_ele_ptr;
 typedef std::vector<s_ele_ptr> s_ele_ptrs;
 template<typename... Args>

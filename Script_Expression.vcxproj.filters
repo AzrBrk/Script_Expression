@@ -66,6 +66,12 @@
     <ClInclude Include="exp_cpp_func.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="functions_list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="exp_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_Expression.cpp">
@@ -111,6 +117,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="exp_cpp_func.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exp_type.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

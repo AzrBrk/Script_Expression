@@ -14,8 +14,13 @@ class exp_invoke :
 	public exp_ele
 {
 public:
-	exp_invoke() :exp_ele() { e_type = ele_type::invoke; };
+	exp_invoke() :exp_ele() {
+		_log.object("exp_invoke");
+		_log.behave(__FUNCTION__); 
+		e_type = ele_type::invoke;
+	};
 	exp_invoke(s_ele_ptr attach_ele);
+	exp_invoke(s_seg_ptr seg_ptr);
 	//construct a exp_invoke with a auto_iterator<s_ele_ptrs> pointing to the owner of the segment
 	exp_invoke(auto_iterator<s_ele_ptrs> vit);
 	//
@@ -30,6 +35,7 @@ public:
 	s_ele_ptr top();
 	//get the size of the stack
 	int size();
+	void execute_command(s_sc_ptr cmd);
 	void link_func(s_ele_ptr e);
 	template<class C1, class C2, class R>
 	R _create_func_(C1& c1, R(C2::* f)())
@@ -49,7 +55,7 @@ public:
 				if (!found && m.name == func_str)
 				{
 					found = true;
-					call(_create_func_(fl, m.pointer));
+					_call(_create_func_(fl, m.pointer), func_str);
 					//auto r = call(result);
 				}
 			});
@@ -72,30 +78,49 @@ public:
 	} 
 	template <class T, class T2>
 	void assign_str(T &t, const T2& _2) { t = _2; }
+	template<class T1, class T2>
+		bool compare(T1& _1, const T2& _2)
+	{
+			return _1 == _2;
+	}
+
+	template<class T1, class T2>
+	bool compare_str(T1& _1, const T2& _2)
+	{
+		if (!std::is_same<T1, T2>::value)
+		{
+			_log.logout("warning: type mismatch!");
+			return false;
+		}
+		else return compare(_1, _2);
+	}
 
 	template<class T,
 		class Bd = boost::describe::describe_bases<T, mod_any_access>,
 		class Md = describe_members<T, mod_any_access>,
 		class En = std::enable_if_t<!std::is_union<T>::value>>
-		void call(T  t)
+		void _call(T  t, std::string f_name)
 	{
 		string func_name;
+		string arg_name;
 		bool found = false;
 		_log.behave(__FUNCTION__);
 		boost::mp11::mp_for_each<Md>([&](auto m)
 			{
-				
-				if (m.name == "f_execute")
-				{
-					assign_str(func_name, t.*m.pointer);
-					found = true;
-				}
-				else if(!_stack.empty())
+				arg_name = m.name;
+				if (found && !_stack.empty())
 				{
 					_log.logout("assigning ", m.name);
 					assign(t.*m.pointer, pop());
 				}
-				else
+				
+				else if (arg_name == "f_execute")
+				{
+					assign_str(func_name, t.*m.pointer);
+					found = compare_str(func_name, f_name);
+				}
+				
+				else if(_stack.empty())
 				{
 					_log.logout("warning:stack is empty!");
 				}
@@ -103,13 +128,14 @@ public:
 		if (found) { 
 			_log.logout("calling ", func_name);
 			_return = t(); 
+			//exp_return();
 			found = false; 
 		}
 		else _log.logout("no execute() found");
 
 		_log.last_behavior();
 	}
-	s_ele_ptr exp_return() { return _return; }
+	s_ele_ptr exp_return() { link_to_segment->link_to_command->value = _return;  return _return; }
 
 private:
 	exp_log_debug _log;
@@ -120,3 +146,8 @@ private:
 };
 
 typedef std::shared_ptr<exp_invoke> s_i_ptr;
+template<class ...Args>
+s_i_ptr make_invoke(Args&& ...args)
+{
+	return std::make_shared<exp_invoke>(std::forward<Args>(args)...);
+}

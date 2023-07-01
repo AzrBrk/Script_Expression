@@ -9,12 +9,15 @@ operators::delim_operator::delim_operator(exp_opr& a, exp_opr& b, delim_type d)
 
 bool operators::mark_owner(auto_iterator<s_ele_ptrs> target_v)
 {
+	_return_if(!target_v.size(), false);
 	_return_if(target_v.at_begin(), false);
+	
 	auto e_ptr = target_v.at(target_v.index() - 1).data();
 	if (*e_ptr == exp_ele::ele_type::var && *e_ptr != " ") 
 	{
 		target_v.data()->owner = e_ptr;
 		e_ptr->matched = target_v.data();
+		e_ptr->e_type = exp_ele::ele_type::invoke;
 		owner_list.push_back(target_v.data()->owner);
 		return true;
 	}
@@ -121,13 +124,21 @@ void operators::delim_operators_preprocess(s_ele_ptrs& v)
 	{
 		match_delim_operator(i, v_iter);
 	}
+	v_iter.find([](s_ele_ptr e)
+		{
+			if (!(e->e_type == exp_ele::ele_type::opr)) return false;
+			auto op = e->cast_to<exp_opr>();
+			if (op && (op->opr_t == exp_opr::opr_order::__e) && (!(e->matched)))
+				return true;
+			return false;
+		});
+	if(!v_iter.has_state(FALSE_AUTO_ITERATOR)) {
+		_log.logout("Error:", "lack of begin operator for a end delim operator");
+		throw _log;
+	}
+	
 	weight_on(v);
 	_log.logout("sorting owners list...");
-	std::sort(owner_list.begin(), owner_list.end(), [=](s_ele_ptr a, s_ele_ptr b)
-		{
-			return a->matched->cast_to<exp_opr>()->level > b->matched->cast_to<exp_opr>()->level;
-		}
-		);
 	_log.last_behavior();
 }
 
@@ -263,6 +274,7 @@ void operators::match_delim_operator(delim_operator _do, auto_iterator<s_ele_ptr
 	{
 		_log.logout("negative!");
 		_log.logout("Error:", "lack of an end operator for a begin delim operator");
+		throw _log;
 	}
 	_log.last_behavior();
 }

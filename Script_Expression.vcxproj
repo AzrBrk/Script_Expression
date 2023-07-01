@@ -141,6 +141,8 @@
     <ClInclude Include="exp_opr.h" />
     <ClInclude Include="exp_segment.h" />
     <ClInclude Include="exp_taken.h" />
+    <ClInclude Include="exp_type.h" />
+    <ClInclude Include="functions_list.h" />
     <ClInclude Include="htmlElement.h" />
     <ClInclude Include="html_doc.h" />
     <ClInclude Include="if_container.h" />
@@ -159,6 +161,7 @@
     <ClCompile Include="exp_opr.cpp" />
     <ClCompile Include="exp_segment.cpp" />
     <ClCompile Include="exp_taken.cpp" />
+    <ClCompile Include="exp_type.cpp" />
     <ClCompile Include="htmlElement.cpp" />
     <ClCompile Include="html_doc.cpp" />
     <ClCompile Include="if_container.cpp" />

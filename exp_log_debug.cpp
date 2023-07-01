@@ -1,11 +1,13 @@
 #include "exp_log_debug.h"
 
-void exp_log_debug::logout(string err, string add)
+void exp_log_debug::logout(string err, string add, bool shift_line)
 {
+    if(!debug_status) return;
     err_info = err;
     _additional = add;
     make_all_info();
-    if(debug_status) cout << all_info << endl;
+    cout << all_info;
+    if(shift_line) cout << endl;
 }
 
 void exp_log_debug::debug(bool b_d)

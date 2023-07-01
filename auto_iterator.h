@@ -15,6 +15,7 @@ class auto_iterator : public statement_register
 public:
 	auto_iterator(vec_t& v);//the auto_iterator must be initialized with a vec_t
 	vec_t& vec();
+	size_t size();
 	bool safe_verify_operate(bool direction = true);//if failed, ++ or -- will not be executed
 	auto_iterator<vec_t> operator++(int);
 	auto_iterator<vec_t> operator--(int);
@@ -87,6 +88,12 @@ template<VEC_TYPE vec_t>
 inline vec_t& auto_iterator<vec_t>::vec()
 {
 	return ref_v;
+}
+
+template<VEC_TYPE vec_t>
+inline size_t auto_iterator<vec_t>::size()
+{
+	return ref_v.size();
 }
 
 template<VEC_TYPE vec_t>

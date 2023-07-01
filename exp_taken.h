@@ -16,6 +16,7 @@ public:
 	s_ele_ptr e(unsigned int index);//quick access to a linked element, to use this function, link_to_command must be set
 	s_sc_ptr link_to_command{nullptr};//link to a command unit
 	auto_iterator<s_ele_ptrs> take_opr(auto_iterator<s_ele_ptrs> _vit);//extract a operator from sources, according to the operator's order
+	void fetch_value();//fetch value from a element, according to the element's type
 private:
 	exp_log_debug _log;
 };
@@ -47,11 +48,13 @@ public:
 		if ((*ptr)->e2)
 		{
 			os << ",";
+
 			os << ((*ptr)->e2->e_type == ele_type::taken ? "@" + query_taken((*ptr)->e2->cast_to<exp_taken>(), ptr.vec()) : (*ptr)->e2->e_str) << " ";
 		}
 		if ((*ptr)->e3)
 		{
 			os << ",";
+
 			os << ((*ptr)->e3->e_type == ele_type::taken ? "@" + query_taken((*ptr)->e3->cast_to<exp_taken>(), ptr.vec()) : (*ptr)->e3->e_str) << " ";
 		}
 		return os;
@@ -61,7 +64,7 @@ public:
 	s_sc_ptr operator ->();//return pointer to command
 	operator unsigned int&();//return reference to address
 	unsigned int address() const;//Get the address of the pointer
-	void link_to_executale(s_ele_ptr e_func);//link to a executable element
+	void link_to_executable(s_ele_ptr e_func);//link to a executable element
 	template<typename EXEC_TYPE>
 	void exec();//execute the command, both exp_invoke and exp_cpp_func
 private:

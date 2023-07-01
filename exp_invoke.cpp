@@ -1,14 +1,25 @@
 #include "exp_invoke.h"
 
 exp_invoke::exp_invoke(s_ele_ptr attach_ele)
+	:
+	exp_invoke()
 {
 	invoke_ele = attach_ele;
 }
 
-exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
+exp_invoke::exp_invoke(s_seg_ptr seg_ptr)
+	:
+	exp_invoke()
 {
-	_log.object("exp_invoke");
-	_log.behave(__FUNCTION__);
+	link_to_segment = seg_ptr;
+	invoke_ele = seg_ptr->owner;
+}
+
+exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
+	:
+	exp_invoke()
+{
+
 	invoke_ele = vit.data();
 	auto matched_seg = invoke_ele->matched;
 	if (matched_seg)
@@ -16,7 +27,7 @@ exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
 		//auto_iterator move to the begin of the segment
 		vit.find([=](s_ele_ptr e)//???
 			{
-				_log.logout("comparing:", std::to_string((unsigned int)e.get()) + "with" + std::to_string((unsigned int)matched_seg.get()));
+				//_log.logout("comparing:", std::to_string((unsigned int)e.get()) + "with" + std::to_string((unsigned int)matched_seg.get()));
 				return (unsigned int)e.get() == (unsigned int)matched_seg.get();
 			});
 		//verify the begin operator
@@ -26,8 +37,8 @@ exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
 		}
 		else
 		{
-			_log.logout("Fatal Error:","begin operator not verified");
-			_log.logout("begin operator not verified at " + std::to_string(vit.index()) +":", vit.data()->operator std::string());
+			_log.logout("Fatal Error:", "begin operator not verified");
+			_log.logout("begin operator not verified at " + std::to_string(vit.index()) + ":", vit.data()->operator std::string());
 			throw _log;
 		}
 		//save a copy of the begin iterator
@@ -39,7 +50,7 @@ exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
 		vit.pop_state(FALSE_AUTO_ITERATOR);
 		vit.find([&](s_ele_ptr e)
 			{
-				_log.logout("comparing:", std::to_string((unsigned int)e->matched.get()) + "with" + std::to_string((unsigned int)begin_iter.data().get()));
+				//_log.logout("comparing:", std::to_string((unsigned int)e->matched.get()) + "with" + std::to_string((unsigned int)begin_iter.data().get()));
 				return e->matched.get() == begin_iter.data().get();
 			});
 		//verify the end operator
@@ -47,13 +58,13 @@ exp_invoke::exp_invoke(auto_iterator<s_ele_ptrs> vit)
 		{
 			_log.logout("Fatal Error:", "end operator not found");
 			throw _log;
-			
+
 		}
 		else
 		{
 			_log.logout("end operator verified");
 		}
-		auto seg_offset = vit.get_last_move_offset()+1;
+		auto seg_offset = vit.get_last_move_offset() + 1;
 		_log.logout("segment offset:", std::to_string(seg_offset));
 		_log.logout("importing segment...");
 		link_to_segment = make_segment();
@@ -81,6 +92,16 @@ void exp_invoke::push(s_ele_ptr ptr)
 void exp_invoke::wrap_segment()
 {
 	_log.behave(__FUNCTION__);
+	if (!link_to_segment)
+	{
+		_log.logout("Fatal Error:", "segment not found");
+		throw _log;
+	}
+	if (!link_to_segment->wrap_needed)
+	{
+		_log.logout(link_to_segment->operator std::string(), "segment already wrapped");
+		return;
+	}
 	_log.logout("wrapping segment...");
 	_log.logout("creating call operator...");
 	auto call_opr = std::make_shared<exp_opr>("CALL");
@@ -95,8 +116,7 @@ void exp_invoke::wrap_segment()
 		{
 			exp_command_pointer c = *p;
 			cout << c << "=>";
-			ele->e2 = invoke_ele;
-			if(ele->command->e_str == ",")
+			if (ele->command->e_str == ",")
 				ele->command->e_str = "PUSH";
 			cout << c << endl;
 		}
@@ -108,7 +128,111 @@ void exp_invoke::wrap_segment()
 	link_to_segment->commands.push_back(pop_cmd);
 	//wrap return value with a taken element to link to invoke element
 	_log.logout("wrapping return value...");
-	invoke_ele->matched = make_taken(link_to_segment->commands.back())->cast_to_ele();
+	link_to_segment->link_to_command = pop_cmd;
 	_log.logout("wrapping segment completed");
 	_log.last_behavior();
 }
+
+s_ele_ptr exp_invoke::pop()
+{
+	auto p_e = _stack.top();
+	_stack.pop();
+	return p_e;
+}
+
+s_ele_ptr exp_invoke::top()
+{
+	return _stack.top();
+}
+
+int exp_invoke::size()
+{
+	return _stack.size();
+}
+
+void exp_invoke::execute_command(s_sc_ptr cmd)
+{
+	_log.behave(__FUNCTION__);
+	if (!cmd)
+	{
+		_log.logout("Fatal Error:", "command not found");
+		throw _log;
+	}
+	string cmd_str = cmd->command->e_str;
+	if (cmd_str == "PUSH")
+	{
+		auto push_ele = cmd->e1;
+		if (!push_ele)
+		{
+			_log.logout("Fatal Error:", "push element not found");
+			throw _log;
+		}
+		if (*push_ele == ele_type::taken)
+		{
+			_log.logout("ele_type =", " taken, calculating...");
+			push_ele->cast_to<exp_taken>()->fetch_value();
+			_log.logout("value = ", push_ele->operator std::string());
+		}
+		else if (*push_ele == ele_type::segment)
+		{
+			auto seg = push_ele->cast_to<exp_segment>();
+			if(!seg)
+			{
+				_log.logout("Fatal Error:", "segment not found");
+				throw _log;
+			}
+			if(!seg->link_to_command->value)
+			{
+				_log.logout("Fatal Error:", "segment not linked");
+				throw _log;
+			}
+			push_ele = seg->link_to_command->value;
+		}
+		_log.logout("pushing element:", push_ele->operator std::string());
+		push(push_ele);
+	}
+	else if (cmd_str == "CALL")
+	{
+		auto call_ele = cmd->e1;
+		if (!call_ele)
+		{
+			_log.logout("Fatal Error:", "call element not found");
+			throw _log;
+		}
+		auto func_name = call_ele->e_str;
+		script_functions::funcs fl;
+		try
+		{
+			call_func_by_str(fl, func_name);
+		}
+		catch (const std::exception& e)
+		{
+			_log.logout("Fatal Error:", " error while calling:" + func_name);
+			throw _log;
+		}
+
+	}
+	else if (cmd_str == "POP")
+	{
+		if (!_return)
+		{
+			_log.logout("Fatal Error:", "return element not found");
+			throw _log;
+		}
+		else if (*_return == "empty")
+		{
+			_log.logout("warning:", "try to return from 'void'");
+			_log.logout("debug:", "debug is on, trying to return 0 to host");
+			_return->e_str = "0";
+			_return->e_type = ele_type::num;
+		}
+		cmd->value = _return;
+	}
+}
+
+void exp_invoke::link_func(s_ele_ptr e)
+{
+	_return = invoke_ele->matched;
+	invoke_ele->matched = e;;
+}
+

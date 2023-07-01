@@ -104,12 +104,28 @@ auto_iterator<s_ele_ptrs> exp_taken::take_opr(auto_iterator<s_ele_ptrs> _vit)
 	return _vit;
 }
 
+void exp_taken::fetch_value()
+{
+	_log.behave(__FUNCTION__);
+	auto value = e();//fetch link_to_command's value
+	if (!value)
+	{
+		_log.logout("Error: Invalid value!:", "This command unit has not be correctly calculated!!!");
+		throw _log;
+	}
+	e_str = value->e_str;
+	e_type = value->e_type;
+	_log.last_behavior();
+}
+
 
 s_t_ptr make_taken(s_sc_ptr link)
 {
 	auto res = std::make_shared<exp_taken>();
 	_return_if(link == nullptr, res);
 	res->set_command(link->command, link->e1, link->e2, link->e3);
+	res->link_to_command = link;
+	res->to_command();
 	return res;
 }
 
@@ -194,9 +210,9 @@ unsigned int exp_command_pointer::address() const
 	return _address;
 }
 
-void exp_command_pointer::link_to_executale(s_ele_ptr e_func)//?
+void exp_command_pointer::link_to_executable(s_ele_ptr e_func)//?
 {
 	auto cmd = *(*this);
-	cmd->exec_matched = e_func;
+	cmd->command->matched = e_func;
 }
 
