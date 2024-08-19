@@ -11,9 +11,9 @@ public:
     typedef std::shared_ptr<exp_ele> s_ele_ptr;
     typedef std::vector<s_ele_ptr> s_ele_ptrs;
     using string = std::string;
-    // ¸Ãº¯ÊıÓÃÓÚ´Ó×Ö·û´® str ÖĞÈ¡³ö·ûºÏ f º¯ÊıÌõ¼şµÄ×Ö·û¹¹³ÉĞÂµÄ×Ö·û´®²¢·µ»Ø¡£
-    // Èç¹ûÖ¸¶¨ÁË take_num ²ÎÊı£¬Ö»»áÈ¡³ö take_num ¸ö·ûºÏÌõ¼şµÄ×Ö·û¡£Èç¹û take_num Ğ¡ÓÚµÈÓÚ 0£¬Ôò»áÈ¡³öËùÓĞ·ûºÏÌõ¼şµÄ×Ö·û¡£
-    // str ²ÎÊıÎªÄ¿±ê×Ö·û´®£¬f ²ÎÊıÎªº¯ÊıÀàĞÍ£¬Æä²ÎÊıÎª char ÀàĞÍ£¬·µ»ØÖµÀàĞÍÎª bool ÀàĞÍ¡£
+    // è¯¥å‡½æ•°ç”¨äºä»å­—ç¬¦ä¸² str ä¸­å–å‡ºç¬¦åˆ f å‡½æ•°æ¡ä»¶çš„å­—ç¬¦æ„æˆæ–°çš„å­—ç¬¦ä¸²å¹¶è¿”å›ã€‚
+    // å¦‚æœæŒ‡å®šäº† take_num å‚æ•°ï¼Œåªä¼šå–å‡º take_num ä¸ªç¬¦åˆæ¡ä»¶çš„å­—ç¬¦ã€‚å¦‚æœ take_num å°äºç­‰äº 0ï¼Œåˆ™ä¼šå–å‡ºæ‰€æœ‰ç¬¦åˆæ¡ä»¶çš„å­—ç¬¦ã€‚
+    // str å‚æ•°ä¸ºç›®æ ‡å­—ç¬¦ä¸²ï¼Œf å‚æ•°ä¸ºå‡½æ•°ç±»å‹ï¼Œå…¶å‚æ•°ä¸º char ç±»å‹ï¼Œè¿”å›å€¼ç±»å‹ä¸º bool ç±»å‹ã€‚
     template<typename func_type>
     static  string TAKE_WHEN(string& str, func_type f, int take_num = -1);
 #define take_when(x,func) _Expression::TAKE_WHEN<decltype(func)>(x,func)
@@ -38,7 +38,7 @@ public:
     static void convert_operators();
     static s_ele_ptrs get_devs();
 
-    //ÔÚÔªËØÈİÆ÷ÖĞ×ª»¯eleÔªËØÀàĞÍ
+    //åœ¨å…ƒç´ å®¹å™¨ä¸­è½¬åŒ–eleå…ƒç´ ç±»å‹
     template<ELE_BASE et>
     static std::shared_ptr<et> ele_type_convert(auto_iterator<s_ele_ptrs>& _it);
 
@@ -50,20 +50,22 @@ private:
 template<typename func_type>
 inline std::string _Expression::TAKE_WHEN(std::string& str, func_type f, int take_num)
 {
-    bool b_num_cnt = false; // b_num_cnt ÓÃÓÚÅĞ¶ÏÊÇ·ñĞèÒªÏŞÖÆÈ¡³öµÄ×Ö·ûÊıÁ¿
-    string res; // res ÓÃÓÚ¼ÇÂ¼·ûºÏÌõ¼şµÄ×Ö·û×é³ÉµÄ×Ö·û´®
+    bool b_num_cnt = false; // b_num_cnt ç”¨äºåˆ¤æ–­æ˜¯å¦éœ€è¦é™åˆ¶å–å‡ºçš„å­—ç¬¦æ•°é‡
+    string res; // res ç”¨äºè®°å½•ç¬¦åˆæ¡ä»¶çš„å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²
     if (take_num >= 0)
         b_num_cnt = true;
-    while (f(str.at(0))) // Ñ­»·È¡³ö·ûºÏÌõ¼şµÄ×Ö·ûÖ±µ½µÚÒ»¸ö²»·ûºÏÌõ¼şµÄ×Ö·û
+    auto tmp_string_iter = str.begin();
+    while (f(*tmp_string_iter)) // å¾ªç¯å–å‡ºç¬¦åˆæ¡ä»¶çš„å­—ç¬¦ç›´åˆ°ç¬¬ä¸€ä¸ªä¸ç¬¦åˆæ¡ä»¶çš„å­—ç¬¦
     {
-        if (b_num_cnt && --take_num < 0) // Èç¹ûĞèÒªÏŞÖÆÈ¡³öÊıÁ¿£¬²¢ÇÒÒÑ¾­È¡³öÁË take_num ¸ö×Ö·û£¬ÔòÍË³öÑ­»·
+        if (b_num_cnt && --take_num < 0) // å¦‚æœéœ€è¦é™åˆ¶å–å‡ºæ•°é‡ï¼Œå¹¶ä¸”å·²ç»å–å‡ºäº† take_num ä¸ªå­—ç¬¦ï¼Œåˆ™é€€å‡ºå¾ªç¯
             break;
-        res += str.at(0); // ½«·ûºÏÌõ¼şµÄ×Ö·ûÌí¼Óµ½½á¹û×Ö·û´®ÖĞ
-        str.erase(0, 1); // É¾³ıÒÑ¾­È¡³öµÄ×Ö·û
-        if (str.empty()) // Èç¹ûÒÑ¾­È¡³öÁËËùÓĞ×Ö·û£¬ÔòÍË³öÑ­»·
+        res += *tmp_string_iter; // å°†ç¬¦åˆæ¡ä»¶çš„å­—ç¬¦æ·»åŠ åˆ°ç»“æœå­—ç¬¦ä¸²ä¸­
+        ++tmp_string_iter;
+        if (tmp_string_iter == str.end()) // å¦‚æœå·²ç»å–å‡ºäº†æ‰€æœ‰å­—ç¬¦ï¼Œåˆ™é€€å‡ºå¾ªç¯
             break;
     }
-    return res; // ·µ»ØÈ¡³öµÄ×Ö·û¹¹³ÉµÄ×Ö·û´®
+    str.erase(0, tmp_string-iter - str.begin());
+    return res; // è¿”å›å–å‡ºçš„å­—ç¬¦æ„æˆçš„å­—ç¬¦ä¸²
 }
 template<ELE_BASE et>
 inline std::shared_ptr<et> _Expression::ele_type_convert(auto_iterator<s_ele_ptrs>& _it)
